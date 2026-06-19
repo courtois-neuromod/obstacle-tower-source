@@ -20,7 +20,9 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-
+      - name: Fix libdl.so missing error
+        run: |
+          sudo ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
