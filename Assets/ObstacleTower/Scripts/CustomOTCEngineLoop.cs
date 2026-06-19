@@ -23,7 +23,7 @@ public class CustomOTCEngineLoop : MonoBehaviour
         RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.UnityWebRequestUpdate>(ref defaultPlayerLoop);
         RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.XRUpdate>(ref defaultPlayerLoop);
         RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.ProcessRemoteInput>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.TangoUpdate>(ref defaultPlayerLoop);
+        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.ARCoreUpdate>(ref defaultPlayerLoop);
         RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.UpdateKinect>(ref defaultPlayerLoop);
         RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.DeliverIosPlatformEvents>(ref defaultPlayerLoop);
         RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.SpriteAtlasManagerUpdate>(ref defaultPlayerLoop);

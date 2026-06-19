@@ -122,7 +122,7 @@ public class ShootProjectiles : MonoBehaviour
         Vector3 finalVelocity = Quaternion.AngleAxis(angleBetweenObjects, Vector3.up) * velocity;
         if (!float.IsNaN(finalVelocity.x)) //NaN checked
         {
-            rb.velocity = finalVelocity;
+            rb.linearVelocity = finalVelocity;
         }
     }
 }

@@ -109,7 +109,7 @@ public class AgentAnimator : MonoBehaviour
         {
             if (currentlyJumping)
             {
-                m_Animator.SetFloat("Jump", m_Rigidbody.velocity.y);
+                m_Animator.SetFloat("Jump", m_Rigidbody.linearVelocity.y);
             }
             else
             {
@@ -214,8 +214,8 @@ public class AgentAnimator : MonoBehaviour
                 Vector3 movementVectorFromTheAnimator =
                     (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
                 movementVectorFromTheAnimator.y = 0;
-                m_Rigidbody.velocity =
-                    Vector3.Lerp(m_Rigidbody.velocity, movementVectorFromTheAnimator,
+                m_Rigidbody.linearVelocity =
+                    Vector3.Lerp(m_Rigidbody.linearVelocity, movementVectorFromTheAnimator,
                         .9f); //lerp to smooth it out a bit
             }
         }

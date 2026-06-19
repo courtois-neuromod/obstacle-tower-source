@@ -249,8 +249,8 @@ public class ObstacleTowerAgent : Agent
         }
 
         dirToGo *= 6f;
-        agentRb.velocity =
-            Vector3.Lerp(agentRb.velocity, new Vector3(dirToGo.x, agentRb.velocity.y, dirToGo.z), .2f);
+        agentRb.linearVelocity =
+            Vector3.Lerp(agentRb.linearVelocity, new Vector3(dirToGo.x, agentRb.linearVelocity.y, dirToGo.z), .2f);
         agentAnimator.Move(dirToGo);
     }
 

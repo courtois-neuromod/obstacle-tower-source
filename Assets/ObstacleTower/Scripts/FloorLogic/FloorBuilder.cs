@@ -47,7 +47,7 @@ public class FloorBuilder : MonoBehaviour
         agent.transform.position += 1.5f * agent.transform.forward;
         cameraPivot.transform.position += 1.5f * agent.transform.forward;
         var agentRb = agent.GetComponent<Rigidbody>();
-        agentRb.velocity = Vector3.zero;
+        agentRb.linearVelocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
         agentRb.position = targetPosition + 1.5f * agent.transform.position;
         agentRb.rotation = agent.transform.rotation;
