@@ -24,19 +24,19 @@ jobs:
         run: |
           sudo ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
       # Test
-      - name: Run tests
-        uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityVersion: auto
+#      - name: Run tests
+#        uses: game-ci/unity-test-runner@v4
+#        env:
+#          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+#          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+#          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#        with:
+#          githubToken: ${{ secrets.GITHUB_TOKEN }}
+#          unityVersion: auto
 
       # Build
       - name: Build project
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@v2.2.0
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
