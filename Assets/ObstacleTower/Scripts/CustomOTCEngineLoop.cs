@@ -1,87 +1,110 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.LowLevel;
 
 
 /// <summary>
 /// Obstacle Tower uses a custom engine loop to speed up the simulation during training.
+/// Removed subsystems are looked up by fully-qualified type name so that the code
+/// compiles even when a subsystem no longer exists in the current Unity version
+/// (e.g. UNet systems were removed in Unity 6, ARCore / Kinect removed earlier).
 /// </summary>
 public class CustomOTCEngineLoop : MonoBehaviour
 {
     [RuntimeInitializeOnLoadMethod]
     static void RuntimeStart()
     {
-        var defaultPlayerLoop = UnityEngine.LowLevel.PlayerLoop.GetDefaultPlayerLoop();
-        
+        var defaultPlayerLoop = PlayerLoop.GetDefaultPlayerLoop();
+
         // Assumptions: project does not use:
         // XR, Analytics, WebRequest, Kinect, TangoUpdate, iOS, TextureStreaming, Audio, Physics2D, Wind,
-        // Video, Pathfinding, runtime Substance, Englighten, VFX, PhysicsCloth,
-        // ParticleSystems, ScreenCapture.
-        // If one of those are used in the project, appropriate lines removing such functionality system updates should be commented out.
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.Initialization.XREarlyUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.AnalyticsCoreStatsUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.UnityWebRequestUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.XRUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.ProcessRemoteInput>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.ARCoreUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.UpdateKinect>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.DeliverIosPlatformEvents>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.SpriteAtlasManagerUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.UpdateStreamingManager>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.EarlyUpdate.UpdateTextureStreamingManager>(ref defaultPlayerLoop);
-        
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.FixedUpdate.AudioFixedUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.FixedUpdate.XRFixedUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.FixedUpdate.Physics2DFixedUpdate>(ref defaultPlayerLoop);
-        
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreUpdate.Physics2DUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreUpdate.AIUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreUpdate.WindUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreUpdate.UpdateVideo>(ref defaultPlayerLoop);
-        
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreLateUpdate.AIUpdatePostScript>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreLateUpdate.UNetUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreLateUpdate.UpdateMasterServerInterface>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreLateUpdate.UpdateNetworkManager>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PreLateUpdate.ParticleSystemBeginUpdateAll>(ref defaultPlayerLoop);
-        
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.UpdateAudio>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.UpdateVideo>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.UpdateSubstance>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.UpdateVideoTextures>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.EnlightenRuntimeUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.VFXUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.XRPostPresent>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.ProcessWebSendMessages>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.ExecuteGameCenterCallbacks>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.PhysicsSkinnedClothBeginUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.PhysicsSkinnedClothFinishUpdate>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.UpdateCaptureScreenshot>(ref defaultPlayerLoop);
-        RemoveEngineLoopSystem<UnityEngine.PlayerLoop.PostLateUpdate.ParticleSystemEndUpdateAll>(ref defaultPlayerLoop);
-       
-     
-        UnityEngine.LowLevel.PlayerLoop.SetPlayerLoop(defaultPlayerLoop);
+        // Video, Pathfinding, runtime Substance, Enlighten, VFX, PhysicsCloth,
+        // ParticleSystems, ScreenCapture, UNet networking.
+        // Systems that no longer exist in the current Unity version are silently skipped.
+
+        // Initialization
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.Initialization+XREarlyUpdate");
+
+        // EarlyUpdate
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+AnalyticsCoreStatsUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+UnityWebRequestUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+XRUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+ProcessRemoteInput");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+ARCoreUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+UpdateKinect");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+DeliverIosPlatformEvents");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+SpriteAtlasManagerUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+UpdateStreamingManager");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.EarlyUpdate+UpdateTextureStreamingManager");
+
+        // FixedUpdate
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.FixedUpdate+AudioFixedUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.FixedUpdate+XRFixedUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.FixedUpdate+Physics2DFixedUpdate");
+
+        // PreUpdate
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreUpdate+Physics2DUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreUpdate+AIUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreUpdate+WindUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreUpdate+UpdateVideo");
+
+        // PreLateUpdate — UNet types removed in Unity 6
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreLateUpdate+AIUpdatePostScript");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreLateUpdate+UNetUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreLateUpdate+UpdateMasterServerInterface");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreLateUpdate+UpdateNetworkManager");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PreLateUpdate+ParticleSystemBeginUpdateAll");
+
+        // PostLateUpdate
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+UpdateAudio");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+UpdateVideo");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+UpdateSubstance");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+UpdateVideoTextures");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+EnlightenRuntimeUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+VFXUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+XRPostPresent");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+ProcessWebSendMessages");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+ExecuteGameCenterCallbacks");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+PhysicsSkinnedClothBeginUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+PhysicsSkinnedClothFinishUpdate");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+UpdateCaptureScreenshot");
+        TryRemove(ref defaultPlayerLoop, "UnityEngine.PlayerLoop.PostLateUpdate+ParticleSystemEndUpdateAll");
+
+        PlayerLoop.SetPlayerLoop(defaultPlayerLoop);
 
         Debug.Log("Setup of CustomOTCEngineLoop done.");
     }
-    
-    private static bool RemoveEngineLoopSystem<TSystem>(ref UnityEngine.LowLevel.PlayerLoopSystem system)
+
+    /// <summary>
+    /// Removes the subsystem with the given fully-qualified type name from the player loop.
+    /// Uses string matching so that the code compiles even when the type no longer exists.
+    /// </summary>
+    private static void TryRemove(ref PlayerLoopSystem system, string fullTypeName)
     {
-        
+        if (!RemoveByName(ref system, fullTypeName))
+        {
+            Debug.Log($"CustomOTCEngineLoop: subsystem '{fullTypeName}' not found in player loop (may have been removed in this Unity version) — skipping.");
+        }
+    }
+
+    private static bool RemoveByName(ref PlayerLoopSystem system, string fullTypeName)
+    {
         if (system.subSystemList == null)
             return false;
 
         for (int idx = 0; idx < system.subSystemList.Length; idx++)
         {
-            if (system.subSystemList[idx].type == typeof(TSystem))
+            var sub = system.subSystemList[idx];
+            if (sub.type != null && sub.type.FullName == fullTypeName)
             {
-                var reducedSystemList = new List<UnityEngine.LowLevel.PlayerLoopSystem>(system.subSystemList);
-                reducedSystemList.RemoveAt(idx);
-                system.subSystemList = reducedSystemList.ToArray();
+                var list = new List<PlayerLoopSystem>(system.subSystemList);
+                list.RemoveAt(idx);
+                system.subSystemList = list.ToArray();
                 return true;
             }
-                
-            if (RemoveEngineLoopSystem<TSystem>(ref system.subSystemList[idx]))
+
+            if (RemoveByName(ref system.subSystemList[idx], fullTypeName))
                 return true;
         }
 
