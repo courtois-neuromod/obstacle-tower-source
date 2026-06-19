@@ -45,6 +45,7 @@ jobs:
           targetPlatform: StandaloneLinux64
           unityVersion: auto
           allowDirtyBuild: true
+          customImage: unityci/editor:ubuntu-2019.4.4f1-linux-il2cpp-1.1.2
       # Output
       - uses: actions/upload-artifact@v4
         with:
