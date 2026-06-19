@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// Responsible for physically moving platforms around according to various parameters.
@@ -30,7 +30,7 @@ public class PlatformMover : MonoBehaviour
         goingForward = true;
         speed = Random.Range(meanSpeed * 0.75f, meanSpeed *1.25f);
 
-        agent = FindObjectOfType<ObstacleTowerAgent>().gameObject;
+        agent = FindAnyObjectByType<ObstacleTowerAgent>().gameObject;
         floor = agent.transform.parent.gameObject;
 
         if(translateObject)

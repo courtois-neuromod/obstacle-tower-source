@@ -1,10 +1,12 @@
-﻿using UnityEditor;
+using UnityEditor;
+using UnityEditor.Build;
 
 namespace ObstacleTower.Editor
 {
     public static class BuildUtility
     {
-        private const string BaseSymbols = "UNITY_POST_PROCESSING_STACK_V2";
+        // UNITY_POST_PROCESSING_STACK_V2 is no longer needed — URP 17 has built-in post-processing.
+        private const string BaseSymbols = "";
         private const string EvaluationSymbol = "OTCEVALUATION";
 
         [MenuItem("Obstacle Tower/Automated Build")]
@@ -40,7 +42,8 @@ namespace ObstacleTower.Editor
                 fullPath += ".x86_64";
             }
 
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, symbols);
+            // SetScriptingDefineSymbolsForGroup is deprecated in Unity 6; use NamedBuildTarget instead.
+            PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Standalone, symbols);
             BuildPipeline.BuildPlayer(levels, fullPath, target, BuildOptions.None);
         }
     }

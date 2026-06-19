@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 
@@ -59,7 +60,7 @@ public class ObstacleTowerAgent : Agent
         runTimer = true;
         agentRb = GetComponent<Rigidbody>();
         agentAnimator = GetComponent<AgentAnimator>();
-        uIController = FindObjectOfType<UIController>();
+        uIController = FindAnyObjectByType<UIController>();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -187,15 +188,15 @@ public class ObstacleTowerAgent : Agent
         }
     }
 
-    private void MoveAgent(float[] act)
+    private void MoveAgent(ActionSegment<int> act)
     {
         dirToGo = Vector3.zero;
         rotateDir = Vector3.zero;
 
-        var forwardAction = Mathf.FloorToInt(act[0]);
-        var rotateAction = Mathf.FloorToInt(act[1]);
-        var jumpAction = Mathf.FloorToInt(act[2]);
-        var lateralAction = Mathf.FloorToInt(act[3]);
+        var forwardAction = act[0];
+        var rotateAction = act[1];
+        var jumpAction   = act[2];
+        var lateralAction = act[3];
 
         switch (rotateAction) //THIS ROTATES THE CAMERA, NOT THE PLAYER
         {
@@ -253,39 +254,40 @@ public class ObstacleTowerAgent : Agent
         agentAnimator.Move(dirToGo);
     }
 
-    public override void Heuristic(float[] action)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        action[0] = 0f;
-        action[1] = 0f;
-        action[2] = 0f;
-        action[3] = 0f;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = 0;
+        discreteActionsOut[1] = 0;
+        discreteActionsOut[2] = 0;
+        discreteActionsOut[3] = 0;
         if (Input.GetKey(KeyCode.S))
         {
-            action[0] = 2f;
+            discreteActionsOut[0] = 2;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            action[0] = 1f;
+            discreteActionsOut[0] = 1;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            action[3] = 2f;
+            discreteActionsOut[3] = 2;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            action[3] = 1f;
+            discreteActionsOut[3] = 1;
         }
         if (Input.GetKey(KeyCode.K))
         {
-            action[1] = 1f;
+            discreteActionsOut[1] = 1;
         }
         if (Input.GetKey(KeyCode.L))
         {
-            action[1] = 2f;
+            discreteActionsOut[1] = 2;
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            action[2] = 1f;
+            discreteActionsOut[2] = 1;
         }
     }
 
@@ -314,7 +316,7 @@ public class ObstacleTowerAgent : Agent
         }
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actions)
     {
         foreach (var col in _collisions)
         {
@@ -330,7 +332,7 @@ public class ObstacleTowerAgent : Agent
         CheckOutOfBounds();
         CheckTimeout();
 
-        MoveAgent(vectorAction);
+        MoveAgent(actions.DiscreteActions);
         if (runTimer)
         {
             episodeTime -= 1;

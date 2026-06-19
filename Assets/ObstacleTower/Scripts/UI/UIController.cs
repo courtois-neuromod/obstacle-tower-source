@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 
 /// <summary>
@@ -20,8 +20,8 @@ public class UIController : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        floorBuilder = FindObjectOfType<FloorBuilder>();
-        academy = FindObjectOfType<ObstacleTowerManager>();
+        floorBuilder = FindAnyObjectByType<FloorBuilder>();
+        academy = FindAnyObjectByType<ObstacleTowerManager>();
         killScreenPanel.SetActive(false);
     }
 

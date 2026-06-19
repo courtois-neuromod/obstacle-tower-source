@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Debug = UnityEngine.Debug;
@@ -48,7 +48,7 @@ public class ObstacleTowerManager : MonoBehaviour
     {
         floor.environmentParameters = new EnvironmentParameters();
         
-        agentComponent = FindObjectOfType<ObstacleTowerAgent>();
+        agentComponent = FindAnyObjectByType<ObstacleTowerAgent>();
         GraphicsSettings.useScriptableRenderPipelineBatching = true;
         Academy.Instance.OnEnvironmentReset += ResetTower;
     }

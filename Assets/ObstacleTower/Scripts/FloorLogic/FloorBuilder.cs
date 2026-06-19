@@ -31,7 +31,7 @@ public class FloorBuilder : MonoBehaviour
         floorGenerator = new FloorGenerator(environmentParameters);
         roomBuilder = roomPrefab.GetComponent<RoomBuilder>();
         hasInitialized = true;
-        keyController = FindObjectOfType<KeyController>();
+        keyController = FindAnyObjectByType<KeyController>();
     }
 
     public void PlaceAgent(Transform targetTransform)

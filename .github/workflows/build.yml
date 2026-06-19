@@ -1,4 +1,4 @@
-name: Actions 😎
+name: Unity build
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -20,9 +20,6 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-      - name: Fix libdl.so missing error
-        run: |
-          sudo ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
       # Test
 #      - name: Run tests
 #        uses: game-ci/unity-test-runner@v4
@@ -36,7 +33,7 @@ jobs:
 
       # Build
       - name: Build project
-        uses: game-ci/unity-builder@v2.2.0
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -44,8 +41,6 @@ jobs:
         with:
           targetPlatform: StandaloneLinux64
           unityVersion: auto
-          allowDirtyBuild: true
-          customImage: unityci/editor:ubuntu-2019.4.4f1-linux-il2cpp-1.1.2
       # Output
       - uses: actions/upload-artifact@v4
         with:

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 
 //This script handles the logic to determine whether an active projectile
@@ -17,7 +17,7 @@ public class Projectile : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        agent = FindObjectOfType<ObstacleTowerAgent>();
+        agent = FindAnyObjectByType<ObstacleTowerAgent>();
     }
 
 
