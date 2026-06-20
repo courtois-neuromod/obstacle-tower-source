@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
@@ -15,6 +16,25 @@ public class CustomOTCEngineLoop : MonoBehaviour
     [RuntimeInitializeOnLoadMethod]
     static void RuntimeStart()
     {
+        bool isPlayMode = true;
+        var gameModeManager = FindAnyObjectByType<GameModeManager>();
+        if (gameModeManager != null)
+        {
+            var portArgExists = Environment.GetCommandLineArgs().Contains("--mlagents-port");
+            isPlayMode = !portArgExists && !gameModeManager.EnableEditorTraining;
+        }
+        else
+        {
+            isPlayMode = !Environment.GetCommandLineArgs().Contains("--mlagents-port");
+        }
+
+        if (isPlayMode)
+        {
+            Debug.Log("CustomOTCEngineLoop: Play mode detected. Default player loop will be preserved.");
+            return;
+        }
+
+        Debug.Log("CustomOTCEngineLoop: Agent/Training mode detected. Applying custom player loop optimizations.");
         var defaultPlayerLoop = PlayerLoop.GetDefaultPlayerLoop();
 
         // Assumptions: project does not use:

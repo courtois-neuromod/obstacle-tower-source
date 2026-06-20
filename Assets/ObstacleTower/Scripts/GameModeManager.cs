@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +15,7 @@ public class GameModeManager : MonoBehaviour
 
     private void Awake ()
     {
+        Debug.unityLogger.logEnabled = true;
         var agent = GameObject.FindWithTag("agent").GetComponent<ObstacleTowerAgent>();
         var academy = GameObject.FindWithTag("academy").GetComponent<ObstacleTowerManager>();
         var devTools = GameObject.FindWithTag("debug");
