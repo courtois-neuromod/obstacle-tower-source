@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -257,38 +258,46 @@ public class ObstacleTowerAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
+        Debug.Log("ObstacleTowerAgent.Heuristic called! with discreteActionsOut size: " + discreteActionsOut.Length);
+ 
         discreteActionsOut[0] = 0;
         discreteActionsOut[1] = 0;
         discreteActionsOut[2] = 0;
         discreteActionsOut[3] = 0;
-        if (Input.GetKey(KeyCode.S))
+        
+        var keyboard = Keyboard.current;
+        if (keyboard != null)
         {
-            discreteActionsOut[0] = 2;
+            if (keyboard.sKey.isPressed)
+            {
+                discreteActionsOut[0] = 2;
+            }
+            if (keyboard.wKey.isPressed)
+            {
+                discreteActionsOut[0] = 1;
+            }
+            if (keyboard.aKey.isPressed)
+            {
+                discreteActionsOut[3] = 2;
+            }
+            if (keyboard.dKey.isPressed)
+            {
+                discreteActionsOut[3] = 1;
+            }
+            if (keyboard.kKey.isPressed)
+            {
+                discreteActionsOut[1] = 1;
+            }
+            if (keyboard.lKey.isPressed)
+            {
+                discreteActionsOut[1] = 2;
+            }
+            if (keyboard.spaceKey.isPressed)
+            {
+                discreteActionsOut[2] = 1;
+            }
         }
-        if (Input.GetKey(KeyCode.W))
-        {
-            discreteActionsOut[0] = 1;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            discreteActionsOut[3] = 2;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            discreteActionsOut[3] = 1;
-        }
-        if (Input.GetKey(KeyCode.K))
-        {
-            discreteActionsOut[1] = 1;
-        }
-        if (Input.GetKey(KeyCode.L))
-        {
-            discreteActionsOut[1] = 2;
-        }
-        if (Input.GetKey(KeyCode.Space))
-        {
-            discreteActionsOut[2] = 1;
-        }
+        
     }
 
     private void CheckOutOfBounds()

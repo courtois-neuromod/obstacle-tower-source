@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UnityTemplateProjects
 {
@@ -79,37 +80,44 @@ namespace UnityTemplateProjects
         Vector3 GetInputTranslationDirection()
         {
             Vector3 direction = new Vector3();
-            if (Input.GetKey(KeyCode.W))
+            var keyboard = Keyboard.current;
+            if (keyboard != null)
             {
-                direction += Vector3.forward;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                direction += Vector3.back;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                direction += Vector3.left;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                direction += Vector3.right;
-            }
-            if (Input.GetKey(KeyCode.Q))
-            {
-                direction += Vector3.down;
-            }
-            if (Input.GetKey(KeyCode.E))
-            {
-                direction += Vector3.up;
+                if (keyboard.wKey.isPressed)
+                {
+                    direction += Vector3.forward;
+                }
+                if (keyboard.sKey.isPressed)
+                {
+                    direction += Vector3.back;
+                }
+                if (keyboard.aKey.isPressed)
+                {
+                    direction += Vector3.left;
+                }
+                if (keyboard.dKey.isPressed)
+                {
+                    direction += Vector3.right;
+                }
+                if (keyboard.qKey.isPressed)
+                {
+                    direction += Vector3.down;
+                }
+                if (keyboard.eKey.isPressed)
+                {
+                    direction += Vector3.up;
+                }
             }
             return direction;
         }
         
         void Update()
         {
+            var keyboard = Keyboard.current;
+            var mouse = Mouse.current;
+
             // Exit Sample  
-            if (Input.GetKey(KeyCode.Escape))
+            if (keyboard != null && keyboard.escapeKey.isPressed)
             {
                 Application.Quit();
 				#if UNITY_EDITOR
@@ -118,22 +126,25 @@ namespace UnityTemplateProjects
             }
 
             // Hide and lock cursor when right mouse button pressed
-            if (Input.GetMouseButtonDown(1))
+            if (mouse != null && mouse.rightButton.wasPressedThisFrame)
             {
                 Cursor.lockState = CursorLockMode.Locked;
             }
 
             // Unlock and show cursor when right mouse button released
-            if (Input.GetMouseButtonUp(1))
+            if (mouse != null && mouse.rightButton.wasReleasedThisFrame)
             {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
 
             // Rotation
-            if (Input.GetMouseButton(1))
+            if (mouse != null && mouse.rightButton.isPressed)
             {
-                var mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y") * (invertY ? 1 : -1));
+                // Note: Mouse delta in Input System is raw pixels, typically much larger than legacy Input.GetAxis
+                // We scale it down by a factor to maintain a similar sensitivity feel.
+                var delta = mouse.delta.ReadValue() * 0.05f;
+                var mouseMovement = new Vector2(delta.x, delta.y * (invertY ? 1 : -1));
                 
                 var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(mouseMovement.magnitude);
 
@@ -145,13 +156,17 @@ namespace UnityTemplateProjects
             var translation = GetInputTranslationDirection() * Time.deltaTime;
 
             // Speed up movement when shift key held
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (keyboard != null && keyboard.leftShiftKey.isPressed)
             {
                 translation *= 10.0f;
             }
             
             // Modify movement by a boost factor (defined in Inspector and modified in play mode through the mouse scroll wheel)
-            boost += Input.mouseScrollDelta.y * 0.2f;
+            if (mouse != null)
+            {
+                // Input System scroll is typically 120 per notch, scale it down.
+                boost += mouse.scroll.ReadValue().y * 0.001f;
+            }
             translation *= Mathf.Pow(2.0f, boost);
 
             m_TargetCameraState.Translate(translation);
